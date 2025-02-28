@@ -6,7 +6,7 @@ import { config } from 'node-config-ts';
 const app = express();
 app.disable('etag');
 
-app.post('/jobs/group/:remoteId/', (req, res) => {
+app.post('/jobs/submit/analysis/group/:remoteId/', (req, res) => {
 
     const groupId = parseInt(req.params.remoteId);
 
@@ -22,7 +22,7 @@ app.post('/jobs/group/:remoteId/', (req, res) => {
         taskId : taskId
     })
 });
-app.post('/jobs/prof/:remoteId/', (req, res) => {
+app.post('/jobs/submit/analysis/prof/:remoteId/', (req, res) => {
 
     const profId = parseInt(req.params.remoteId);
 
@@ -38,7 +38,7 @@ app.post('/jobs/prof/:remoteId/', (req, res) => {
         taskId : taskId
     })
 });
-app.post('/jobs/search/', (req, res) => {
+app.post('/jobs/submit/search/', (req, res) => {
  
     const matchQuery : string | undefined = req.query.match ? String(req.query.match) : undefined;
     const limit : number | undefined = req.query.limit ? parseInt(String(req.query.limit)) : undefined;
