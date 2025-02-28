@@ -78,13 +78,13 @@ app.get('/jobs/result/:jobId/', (req, res) => {
 
     switch (status) {
         case JobStatus.Processing:
-            res.status(503).end();
+            res.status(503).json({ "error" : "The job result cannot be retrieved as the job is being processed" });
             return;
         case JobStatus.NotFound:
-            res.status(404).end();
+            res.status(404).end({ "error" : "The job is not found (either not placed yet or has already been completed)" });
             return;
         case JobStatus.Error:
-            res.status(500).end();
+            res.status(500).end({ "error" : "An internal error occured while processing the job" });
             return;
     }
 
