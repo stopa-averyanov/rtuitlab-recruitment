@@ -6,7 +6,7 @@ import { config } from 'node-config-ts';
 const app = express();
 app.disable('etag');
 
-app.post('/jobs/group/:remoteId/', (req, res) => {
+app.post('/jobs/submit/analysis/group/:remoteId/', (req, res) => {
 
     const groupId = parseInt(req.params.remoteId);
 
@@ -16,13 +16,13 @@ app.post('/jobs/group/:remoteId/', (req, res) => {
         return;
     }
 
-    const taskId = requestAnalysisJob(1, groupId, pool);
+    const jobId = requestAnalysisJob(1, groupId, pool);
 
     res.json({
-        taskId : taskId
+        jobId : jobId
     })
 });
-app.post('/jobs/prof/:remoteId/', (req, res) => {
+app.post('/jobs/submit/analysis/prof/:remoteId/', (req, res) => {
 
     const profId = parseInt(req.params.remoteId);
 
@@ -32,22 +32,22 @@ app.post('/jobs/prof/:remoteId/', (req, res) => {
         return;
     }
     
-    const taskId = requestAnalysisJob(2, profId, pool);
+    const jobId = requestAnalysisJob(2, profId, pool);
 
     res.json({
-        taskId : taskId
+        jobId : jobId
     })
 });
-app.post('/jobs/search/', (req, res) => {
+app.post('/jobs/submit/search/', (req, res) => {
  
     const matchQuery : string | undefined = req.query.match ? String(req.query.match) : undefined;
     const limit : number | undefined = req.query.limit ? parseInt(String(req.query.limit)) : undefined;
     const pageToken : string | undefined = req.query.pageToken ? String(req.query.pageToken) : undefined;
 
-    const taskId = requestSearchJob(pool, limit, matchQuery, pageToken);
+    const jobId = requestSearchJob(pool, limit, matchQuery, pageToken);
 
     res.json({
-        taskId : taskId
+        jobId : jobId
     })
 });
 app.get('/jobs/status/:jobId/', (req, res) => {
@@ -78,13 +78,13 @@ app.get('/jobs/result/:jobId/', (req, res) => {
 
     switch (status) {
         case JobStatus.Processing:
-            res.status(503).end();
+            res.status(503).json({ "error" : "The job result cannot be retrieved as the job is being processed" });
             return;
         case JobStatus.NotFound:
-            res.status(404).end();
+            res.status(404).end({ "error" : "The job is not found (either not placed yet or has already been completed)" });
             return;
         case JobStatus.Error:
-            res.status(500).end();
+            res.status(500).end({ "error" : "An internal error occured while processing the job" });
             return;
     }
 
