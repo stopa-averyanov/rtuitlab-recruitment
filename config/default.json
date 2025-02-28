@@ -1,0 +1,28 @@
+{
+    "analysis" : {
+
+        "ignoreOnlineClasses" : true,
+        "ignoreGymClasses" : true,
+        "ignoreDifferentBuildings" : true,
+        "maxGapLengthHrs" : 2.5,
+        "maxRangeOfLessonsPerDay" : 2
+    },
+    "db" : {
+
+        "host": "127.0.0.1",
+        "port": 5432,
+        "password": "password",
+        "user": "rtuitlab-webapp",
+        "database": "rtuitlab-webapp-db"
+    },
+    "fetch" : {
+
+        "scheduleUrl" : "https://schedule-of.mirea.ru/schedule/api/ical/{0}/{1}",
+        "searchUrl" : "https://schedule-of.mirea.ru/schedule/api/search"
+    },
+    "app" : {
+
+        "doChecksumCheck" : false,
+        "port": 8080
+    }
+}

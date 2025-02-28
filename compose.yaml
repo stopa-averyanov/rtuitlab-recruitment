@@ -1,0 +1,21 @@
+services:
+  webservice:
+    image: stopaaveryanov/rtuitlab-recruitment-webservice:latest
+    ports:
+    - ${PORT}:8080
+    volumes:
+      - postgres-initdb:/usr/webservice/postgres-initdb/
+  postgres:
+    environment:
+      POSTGRES_DB: 'rtuitlab-webapp-db'
+      POSTGRES_USER: 'rtuitlab-webapp'
+      POSTGRES_PASSWORD: 'password'
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    image: 'postgres:17-alpine'
+    expose:
+    - 5432
+    volumes:
+    - postgres-initdb:/docker-entrypoint-initdb.d/
+    - ./pgdata:/var/lib/postgresql/data/pgdata
+volumes:
+  postgres-initdb:
