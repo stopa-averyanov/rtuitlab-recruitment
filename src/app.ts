@@ -16,10 +16,10 @@ app.post('/jobs/submit/analysis/group/:remoteId/', (req, res) => {
         return;
     }
 
-    const taskId = requestAnalysisJob(1, groupId, pool);
+    const jobId = requestAnalysisJob(1, groupId, pool);
 
     res.json({
-        taskId : taskId
+        jobId : jobId
     })
 });
 app.post('/jobs/submit/analysis/prof/:remoteId/', (req, res) => {
@@ -32,10 +32,10 @@ app.post('/jobs/submit/analysis/prof/:remoteId/', (req, res) => {
         return;
     }
     
-    const taskId = requestAnalysisJob(2, profId, pool);
+    const jobId = requestAnalysisJob(2, profId, pool);
 
     res.json({
-        taskId : taskId
+        jobId : jobId
     })
 });
 app.post('/jobs/submit/search/', (req, res) => {
@@ -44,10 +44,10 @@ app.post('/jobs/submit/search/', (req, res) => {
     const limit : number | undefined = req.query.limit ? parseInt(String(req.query.limit)) : undefined;
     const pageToken : string | undefined = req.query.pageToken ? String(req.query.pageToken) : undefined;
 
-    const taskId = requestSearchJob(pool, limit, matchQuery, pageToken);
+    const jobId = requestSearchJob(pool, limit, matchQuery, pageToken);
 
     res.json({
-        taskId : taskId
+        jobId : jobId
     })
 });
 app.get('/jobs/status/:jobId/', (req, res) => {
