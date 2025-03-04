@@ -6,11 +6,11 @@ import { config } from 'node-config-ts';
 const app = express();
 app.disable('etag');
 
-app.post('/jobs/submit/analysis/group/:remoteId/', (req, res) => {
+app.post('/jobs/submit/analysis/group/:groupId/', (req, res) => {
 
-    const groupId = parseInt(req.params.remoteId);
+    const groupId = parseInt(req.params.groupId);
 
-    if (String(groupId) !== req.params.remoteId || !Number.isFinite(groupId)) {
+    if (String(groupId) !== req.params.groupId || !Number.isFinite(groupId)) {
 
         res.status(400).end();
         return;
@@ -22,11 +22,11 @@ app.post('/jobs/submit/analysis/group/:remoteId/', (req, res) => {
         jobId : jobId
     })
 });
-app.post('/jobs/submit/analysis/prof/:remoteId/', (req, res) => {
+app.post('/jobs/submit/analysis/prof/:profId/', (req, res) => {
 
-    const profId = parseInt(req.params.remoteId);
+    const profId = parseInt(req.params.profId);
 
-    if (String(profId) !== req.params.remoteId || !Number.isFinite(profId)) {
+    if (String(profId) !== req.params.profId || !Number.isFinite(profId)) {
 
         res.status(400).end();
         return;
