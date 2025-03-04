@@ -12,7 +12,7 @@ app.post('/jobs/submit/analysis/group/:groupId/', (req, res) => {
 
     if (String(groupId) !== req.params.groupId || !Number.isFinite(groupId)) {
 
-        res.status(400).end();
+        res.status(400).json({ "error" : "Group id must be a valid integer number"});
         return;
     }
 
@@ -28,7 +28,7 @@ app.post('/jobs/submit/analysis/prof/:profId/', (req, res) => {
 
     if (String(profId) !== req.params.profId || !Number.isFinite(profId)) {
 
-        res.status(400).end();
+        res.status(400).json({ "error" : "Professor id must be a valid integer number"});
         return;
     }
     
@@ -56,7 +56,7 @@ app.get('/jobs/status/:jobId/', (req, res) => {
 
     if (String(jobId) !== req.params.jobId || !Number.isFinite(jobId)) {
 
-        res.status(400).end();
+        res.status(400).json({ "error" : "Job id must be a valid integer number"});
         return;
     }
 
@@ -70,7 +70,7 @@ app.get('/jobs/result/:jobId/', (req, res) => {
 
     if (String(jobId) !== req.params.jobId || !Number.isFinite(jobId)) {
 
-        res.status(400).end();
+        res.status(400).json({ "error" : "Job id must be a valid integer number"});
         return;
     }
 
