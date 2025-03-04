@@ -10,7 +10,7 @@ app.post('/jobs/submit/analysis/group/:remoteId/', (req, res) => {
 
     const groupId = parseInt(req.params.remoteId);
 
-    if (String(groupId) !== req.params.remoteId) {
+    if (String(groupId) !== req.params.remoteId || !Number.isFinite(groupId)) {
 
         res.status(400).end();
         return;
@@ -26,7 +26,7 @@ app.post('/jobs/submit/analysis/prof/:remoteId/', (req, res) => {
 
     const profId = parseInt(req.params.remoteId);
 
-    if (String(profId) !== req.params.remoteId) {
+    if (String(profId) !== req.params.remoteId || !Number.isFinite(profId)) {
 
         res.status(400).end();
         return;
@@ -54,7 +54,7 @@ app.get('/jobs/status/:jobId/', (req, res) => {
 
     const jobId = parseInt(req.params.jobId);
 
-    if (String(jobId) !== req.params.jobId) {
+    if (String(jobId) !== req.params.jobId || !Number.isFinite(jobId)) {
 
         res.status(400).end();
         return;
@@ -68,7 +68,7 @@ app.get('/jobs/result/:jobId/', (req, res) => {
     
     const jobId = parseInt(req.params.jobId);
 
-    if (String(jobId) !== req.params.jobId) {
+    if (String(jobId) !== req.params.jobId || !Number.isFinite(jobId)) {
 
         res.status(400).end();
         return;
