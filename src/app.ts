@@ -22,6 +22,7 @@ app.post('/jobs/submit/analysis/group/:groupId/', (req, res) => {
         jobId : jobId
     })
 });
+
 app.post('/jobs/submit/analysis/prof/:profId/', (req, res) => {
 
     const profId = parseInt(req.params.profId);
