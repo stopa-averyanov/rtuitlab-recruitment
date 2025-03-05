@@ -4,17 +4,39 @@ import { Lesson, lessonFromEvent } from './lesson.js';
 import { createHash } from 'crypto'
 import { config } from 'node-config-ts'
 
+// TODO : Fix namings for ICAL Calendars (currently named JSON components for some reason)
+
+/**
+ * Объект, содержащий результаты поиска через удаленный API
+ */
 export interface SearchResult {
 
+    /**
+     * Найденные на удаленном API сущности
+     */
     targets : {
 
+        /** Имя сущности */
         name : string,
+        /** Тип сущности */
         targetType : number,
+        /** Айди сущности на удаленном API */
         remoteId : number
     }[]
+    /**
+     * Токен следующей страницы для повторных запросов
+     */
     nextPageToken : string
+    // TODO : ^^^ make optional
 }
+// TODO : Add readonly modifiers
 
+/**
+ * Извлекает занятия из ICAL-календаря в текстовом виде
+ * 
+ * @param jsonObject ICAL-календарь с расписанием, занятия из которого необходимо извлечь
+ * @returns Извлеченные занятия
+ */
 export function parseLessons(jsonObject : string) : Lesson[] {
 
     const calendarComponent = _parseCalendarComponent(jsonObject);
@@ -24,12 +46,25 @@ export function parseLessons(jsonObject : string) : Lesson[] {
 
     return lessons;
 }
+
+/**
+ * Генерирует MD5 чек-сумму (в формате UUID) строки
+ * 
+ * @param jsonObject Строка, из которой необходимо сгенерировать чек-сумму
+ * @returns Чек-сумма в формате UUID
+ */
 export function generateMD5(jsonObject : string) : string {
     
     const checksumString = createHash('md5').update(jsonObject).digest('hex');
     return `${checksumString.substring(0, 8)}-${checksumString.substring(8, 12)}-${checksumString.substring(12, 16)}-${checksumString.substring(16, 20)}-${checksumString.substring(20, 32)}`
 }
 
+/**
+ * Запрашивает у удаленного API расписание для конкретной сущности
+ * 
+ * @param target Сущность, расписание для которой нужно получить
+ * @returns ICAL-компонент в текстовом виде если найден на удаленном API, `undefined` иначе
+ */
 export async function fetchCalendarJSON(target : Target) : Promise<string | undefined> {
     
     const url = config.fetch.scheduleUrl.replace('{0}', String(target.target_type)).replace('{1}', String(target.remote_id));
@@ -44,6 +79,12 @@ export async function fetchCalendarJSON(target : Target) : Promise<string | unde
     else return;
 }
 
+/**
+ * Читает ICAL-компонент из текстового вида
+ * 
+ * @param jsonObject ICAL-компонент в текстовом виде
+ * @returns ICAL-компонент в виде объекта `ICAL.Component`
+ */
 function _parseCalendarComponent(jsonObject : string) : ICAL.Component {
 
     const calendarComponent = ICAL.Component.fromString(jsonObject);
@@ -58,6 +99,12 @@ function _parseCalendarComponent(jsonObject : string) : ICAL.Component {
     return calendarComponent;
 }
 
+/**
+ * Извлекает события, имеющие локацию, из ICAL-календаря
+ * 
+ * @param component ICAL-Компонент, из которого нужно извлечь события
+ * @returns 
+ */
 function _extractEvents(component : ICAL.Component) : ICAL.Event[] {
 
     const subcomponents = component.getAllSubcomponents('vevent');
@@ -67,6 +114,12 @@ function _extractEvents(component : ICAL.Component) : ICAL.Event[] {
         .filter(event => event.location !== null);
 }
 
+/**
+ * Применяет к списку событий их правила `RRULE`, генерируя список развернутых повторяющихся событий
+ * 
+ * @param events События, которые нужно развернуть
+ * @returns Список развернутых событий
+ */
 function _expandEvents(events : ICAL.Event[]) : ICAL.Event[] {
 
     const eventsExpanded = new Array<ICAL.Event>;
@@ -79,6 +132,12 @@ function _expandEvents(events : ICAL.Event[]) : ICAL.Event[] {
     return eventsExpanded;
 }
 
+/**
+ * Применяет к событию его правило `RRULE`, генерируя список развернутых повторяющихся событий
+ * 
+ * @param event Событие, которое нужно развернуть
+ * @returns Список развернутых событий
+ */
 function _expandEvent(event : ICAL.Event) : ICAL.Event[] {
 
     const iterator = event.iterator();
@@ -104,6 +163,14 @@ function _expandEvent(event : ICAL.Event) : ICAL.Event[] {
     return eventsExpanded;
 }
 
+/**
+ * Запрашивает у удаленного API поиск по включению строки
+ * 
+ * @param limit Ограничение по количеству результатов поиска
+ * @param match Строка, поиск по включению которой нужно выполнить
+ * @param pageToken Токен следующей страницы (при повторных запросах)
+ * @returns Результаты поиска
+ */
 export async function fetchTargets(limit? : number, match? : string, pageToken? : string) : Promise<SearchResult | undefined> {
 
     const url = config.fetch.searchUrl + '?' + (limit ? `limit=${limit}` : '') + (match ? `match=${match}` : '') + (pageToken ? `&pageToken=${pageToken}` : '');

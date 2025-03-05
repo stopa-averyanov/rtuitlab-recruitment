@@ -2,6 +2,12 @@ import { DistantClassroom, LargeGap, UnbalancedWeek, Bottlenecks } from "./bottl
 import { Lesson } from "./lesson.js";
 import { config } from "node-config-ts";
 
+/**
+ * Анализирует набор занятий и возвращает найденные боттлнеки
+ * 
+ * @param lessons Занятия, которые необходимо проанализировать
+ * @returns Найденные боттлнеки
+ */
 export function bottlenecksFromLessons(lessons : Lesson[]) : Bottlenecks {
 
     return {
@@ -11,16 +17,34 @@ export function bottlenecksFromLessons(lessons : Lesson[]) : Bottlenecks {
     }
 }
 
+/**
+ * Анализирует набор занятий на предмет далеких друг от друга аудиторий и возвращает найденные боттлнеки
+ * 
+ * @param lessons Занятия, которые необходимо проанализировать
+ * @returns Найденные боттлнеки
+ */
 export function distantClassroomFromLessons(lessons : Lesson[]) : DistantClassroom[] {
 
     return _lessonPairBottleneck(lessons, _classroomsDistance);
 }
 
+/**
+ * Анализирует набор занятий на предмет больших "окон" и возвращает найденные боттлнеки
+ * 
+ * @param lessons Занятия, которые необходимо проанализировать
+ * @returns Найденные боттлнеки
+ */
 export function largeGapFromLessons(lessons : Lesson[]) : LargeGap[] {
     
     return _lessonPairBottleneck(lessons, _lessonGap);
 }
 
+/**
+ * Анализирует набор занятий на предмет несбалансированных недель и возвращает найденные боттлнеки
+ * 
+ * @param lessons Занятия, которые необходимо проанализировать
+ * @returns Найденные боттлнеки
+ */
 export function unbalancedWeekFromLessons(lessons : Lesson[]) : UnbalancedWeek[] {
 
     const maxRange = config.analysis.maxRangeOfLessonsPerDay;
@@ -54,6 +78,13 @@ export function unbalancedWeekFromLessons(lessons : Lesson[]) : UnbalancedWeek[]
     return bottlenecks;
 }
 
+/**
+ * Проверяет, находятся ли два занятия в паре достаточно далеко друг от друга относительно перерыва между ними
+ * 
+ * @param lessonA Первое занятие в паре
+ * @param lessonB Второе занятие в паре
+ * @returns `true` если занятия расположены слишком далеко, `false` иначе
+ */
 function _classroomsDistance(lessonA : Lesson, lessonB : Lesson) : boolean {
 
     const ignoreOnlineClasses = config.analysis.ignoreOnlineClasses;
@@ -88,6 +119,13 @@ function _classroomsDistance(lessonA : Lesson, lessonB : Lesson) : boolean {
     return (breakDurationMS <= hourMS / 6 && buildingA !== buildingB);
 }
 
+/**
+ * Проверяет, не слишком ли большое "окно" между двумя занятиями в паре
+ * 
+ * @param lessonA Первое занятие в паре
+ * @param lessonB Второе занятие в паре
+ * @returns `true` если между занятиями слишком большое окно, `false` иначе
+ */
 function _lessonGap(lessonA : Lesson, lessonB : Lesson) : boolean {
 
     const ignoreOnlineClasses = config.analysis.ignoreOnlineClasses;
@@ -105,6 +143,12 @@ function _lessonGap(lessonA : Lesson, lessonB : Lesson) : boolean {
     return breakDurationMS >= hourMS * maxGapLengthHrs;
 }
 
+/**
+ * Считает количество занятий в день в течение недели, считая занятия, *проходящие в одно и то же время*, как одно
+ * 
+ * @param lessons Занятия, которые нужно посчитать
+ * @returns Список количества занятий в день по дням недели начиная с понедельника
+ */
 function _weekBalance(lessons : Lesson[]) : number[] {
 
     const weekGrouped = _collapseToGroups(lessons);
@@ -122,6 +166,13 @@ function _weekBalance(lessons : Lesson[]) : number[] {
     return lessonsPerDay;
 }
 
+/**
+ * Сортирует и анализирует набор занятий попарно с помощью предоставленной функции
+ * 
+ * @param lessons Занятия, которые нужно проанализировать
+ * @param callback Функция, анализирующая пару занятий
+ * @returns Список найденных боттлнеков 
+ */
 function _lessonPairBottleneck(lessons : Lesson[], callback : (a : Lesson, b : Lesson) => boolean) : DistantClassroom[] | LargeGap[] {
 
     const pairs = _arrangeLessonsIntoPairs(lessons).filter(pair => callback(pair[0], pair[1]));;
@@ -149,6 +200,14 @@ function _lessonPairBottleneck(lessons : Lesson[], callback : (a : Lesson, b : L
     return bottlenecks;
 }
 
+/**
+ * Преобразует список неупорядоченных занятий в список пар занятий, идущих друг за другом
+ * 
+ * В случае, когда в одно время проходят несколько занятий, генерирует по паре для каждого из нескольких
+ * 
+ * @param lessons Занятия, которые нужно преобразовать в пары
+ * @returns Список пар занятий
+ */
 function _arrangeLessonsIntoPairs(lessons : Lesson[]) : Lesson[][] {
     
     const lessonGroups = _collapseToGroups(lessons);
@@ -166,6 +225,14 @@ function _arrangeLessonsIntoPairs(lessons : Lesson[]) : Lesson[][] {
     return lessonPairs;
 }
 
+/**
+ * Преобразует неупорядоченный список занятий в упорядоченный список групп занятий, идущих в одно и то же время
+ * 
+ * В группе одно занятие, если оно является единственным, которое проходит в свое время, или несколько, если они проходят одновременно
+ * 
+ * @param lessons Занятия, которые нужно преобразовать в группы
+ * @returns Группы занятий, в каждой из которых одно или больше занятий
+ */
 function _collapseToGroups(lessons : Lesson[]) : Lesson[][] {
 
     function _compareDates(lessonA : Lesson, lessonB : Lesson) : boolean {
@@ -186,6 +253,12 @@ function _collapseToGroups(lessons : Lesson[]) : Lesson[][] {
     return lessonGroups;
 }
 
+/**
+ * Преобразует неупорядоченный список занятий в список недель — то есть, список списков занятий, сгруппированных по неделям
+ * 
+ * @param lessons Занятия, которые нужно преобразовать в список недель
+ * @returns Список недель, содержащий занятия
+ */
 function _arrangeLessonsIntoWeeks(lessons : Lesson[]) : Lesson[][] {
     
     const weeks = lessons.toSorted().map(lesson => [lesson]);
@@ -201,6 +274,13 @@ function _arrangeLessonsIntoWeeks(lessons : Lesson[]) : Lesson[][] {
     return weeks;
 }
 
+/**
+ * Сравнивает недели двух занятий
+ * 
+ * @param lessonA Первое занятие
+ * @param lessonB Второе занятие
+ * @returns `true` если проходят в течение одной и той же недели, `false` иначе
+ */
 function _compareWeeks(lessonA : Lesson, lessonB : Lesson) : boolean {
     
     const sundayA = _getWeekStart(lessonA.start_date);
@@ -209,6 +289,12 @@ function _compareWeeks(lessonA : Lesson, lessonB : Lesson) : boolean {
     return sundayA.getTime() === sundayB.getTime();
 }
 
+/**
+ * Находит неделю, к которой принадлежит произвольный день
+ * 
+ * @param date День, неделю которого нужно найти
+ * @returns Дата полуночи воскресенья по UTC, с которого начинается неделя дня
+ */
 function _getWeekStart(date : Date) : Date {
 
     const sunday = new Date(date.getTime());
