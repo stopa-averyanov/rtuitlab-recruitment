@@ -6,57 +6,58 @@ import { config } from 'node-config-ts';
 const app = express();
 app.disable('etag');
 
-app.post('/jobs/group/:remoteId/', (req, res) => {
+app.post('/jobs/submit/analysis/group/:groupId/', (req, res) => {
 
-    const groupId = parseInt(req.params.remoteId);
+    const groupId = parseInt(req.params.groupId);
 
-    if (String(groupId) !== req.params.remoteId) {
+    if (String(groupId) !== req.params.groupId || !Number.isFinite(groupId)) {
 
-        res.status(400).end();
+        res.status(400).json({ "error" : "Group id must be a valid integer number"});
         return;
     }
 
-    const taskId = requestAnalysisJob(1, groupId, pool);
+    const jobId = requestAnalysisJob(1, groupId, pool);
 
     res.json({
-        taskId : taskId
+        jobId : jobId
     })
 });
-app.post('/jobs/prof/:remoteId/', (req, res) => {
 
-    const profId = parseInt(req.params.remoteId);
+app.post('/jobs/submit/analysis/prof/:profId/', (req, res) => {
 
-    if (String(profId) !== req.params.remoteId) {
+    const profId = parseInt(req.params.profId);
 
-        res.status(400).end();
+    if (String(profId) !== req.params.profId || !Number.isFinite(profId)) {
+
+        res.status(400).json({ "error" : "Professor id must be a valid integer number"});
         return;
     }
     
-    const taskId = requestAnalysisJob(2, profId, pool);
+    const jobId = requestAnalysisJob(2, profId, pool);
 
     res.json({
-        taskId : taskId
+        jobId : jobId
     })
 });
-app.post('/jobs/search/', (req, res) => {
+app.post('/jobs/submit/search/', (req, res) => {
  
     const matchQuery : string | undefined = req.query.match ? String(req.query.match) : undefined;
     const limit : number | undefined = req.query.limit ? parseInt(String(req.query.limit)) : undefined;
     const pageToken : string | undefined = req.query.pageToken ? String(req.query.pageToken) : undefined;
 
-    const taskId = requestSearchJob(pool, limit, matchQuery, pageToken);
+    const jobId = requestSearchJob(pool, limit, matchQuery, pageToken);
 
     res.json({
-        taskId : taskId
+        jobId : jobId
     })
 });
 app.get('/jobs/status/:jobId/', (req, res) => {
 
     const jobId = parseInt(req.params.jobId);
 
-    if (String(jobId) !== req.params.jobId) {
+    if (String(jobId) !== req.params.jobId || !Number.isFinite(jobId)) {
 
-        res.status(400).end();
+        res.status(400).json({ "error" : "Job id must be a valid integer number"});
         return;
     }
 
@@ -68,9 +69,9 @@ app.get('/jobs/result/:jobId/', (req, res) => {
     
     const jobId = parseInt(req.params.jobId);
 
-    if (String(jobId) !== req.params.jobId) {
+    if (String(jobId) !== req.params.jobId || !Number.isFinite(jobId)) {
 
-        res.status(400).end();
+        res.status(400).json({ "error" : "Job id must be a valid integer number"});
         return;
     }
 
@@ -78,13 +79,13 @@ app.get('/jobs/result/:jobId/', (req, res) => {
 
     switch (status) {
         case JobStatus.Processing:
-            res.status(503).end();
+            res.status(503).json({ "error" : "The job result cannot be retrieved as the job is being processed" });
             return;
         case JobStatus.NotFound:
-            res.status(404).end();
+            res.status(404).end({ "error" : "The job is not found (either not placed yet or has already been completed)" });
             return;
         case JobStatus.Error:
-            res.status(500).end();
+            res.status(500).end({ "error" : "An internal error occured while processing the job" });
             return;
     }
 
