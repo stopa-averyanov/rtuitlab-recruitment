@@ -23,6 +23,7 @@ export enum JobStatus {
  */
 interface AnalysisRequest {
 
+    // TODO : complete docs
     targetType : number,
     remoteId : number
 }
@@ -31,6 +32,7 @@ interface AnalysisRequest {
  */
 interface SearchRequest {
 
+    // TODO : complete docs
     limit? : number, 
     match? : string, 
     pageToken? : string
