@@ -22,7 +22,7 @@
     },
     "app" : {
 
-        "doChecksumCheck" : false,
+        "doChecksumCheck" : true,
         "port": 8080
     }
 }
