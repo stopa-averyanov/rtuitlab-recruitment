@@ -17,7 +17,7 @@ export interface SearchResultHydrated {
         readonly remoteId : number,
         readonly bottlenecks : BottlenecksHydrated
     }[]
-    readonly nextPageToken : string
+    readonly nextPageToken? : string
 }
 
 /**

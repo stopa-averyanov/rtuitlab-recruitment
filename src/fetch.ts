@@ -26,8 +26,7 @@ export interface SearchResult {
     /**
      * Токен следующей страницы для повторных запросов
      */
-    readonly nextPageToken : string
-    // TODO : ^^^ make optional
+    readonly nextPageToken? : string
 }
 
 /**
