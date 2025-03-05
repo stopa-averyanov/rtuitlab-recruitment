@@ -4,8 +4,6 @@ import { Lesson, lessonFromEvent } from './lesson.js';
 import { createHash } from 'crypto'
 import { config } from 'node-config-ts'
 
-// TODO : Fix namings for ICAL Calendars (currently named JSON components for some reason)
-
 /**
  * Объект, содержащий результаты поиска через удаленный API
  */
@@ -14,32 +12,30 @@ export interface SearchResult {
     /**
      * Найденные на удаленном API сущности
      */
-    targets : {
+    readonly targets : {
 
         /** Имя сущности */
-        name : string,
+        readonly name : string,
         /** Тип сущности */
-        targetType : number,
+        readonly targetType : number,
         /** Айди сущности на удаленном API */
-        remoteId : number
+        readonly remoteId : number
     }[]
     /**
      * Токен следующей страницы для повторных запросов
      */
-    nextPageToken : string
-    // TODO : ^^^ make optional
+    readonly nextPageToken? : string
 }
-// TODO : Add readonly modifiers
 
 /**
  * Извлекает занятия из ICAL-календаря в текстовом виде
  * 
- * @param jsonObject ICAL-календарь с расписанием, занятия из которого необходимо извлечь
+ * @param icalText ICAL-календарь с расписанием, занятия из которого необходимо извлечь
  * @returns Извлеченные занятия
  */
-export function parseLessons(jsonObject : string) : Lesson[] {
+export function parseLessons(icalText : string) : Lesson[] {
 
-    const calendarComponent = _parseCalendarComponent(jsonObject);
+    const calendarComponent = _parseCalendarComponent(icalText);
     const lessons = _expandEvents(_extractEvents(calendarComponent)).map(event => lessonFromEvent(event));
 
     lessons.sort((a : Lesson, b : Lesson) => (a.start_date.valueOf() - b.start_date.valueOf()));
@@ -50,12 +46,12 @@ export function parseLessons(jsonObject : string) : Lesson[] {
 /**
  * Генерирует MD5 чек-сумму (в формате UUID) строки
  * 
- * @param jsonObject Строка, из которой необходимо сгенерировать чек-сумму
+ * @param text Строка, из которой необходимо сгенерировать чек-сумму
  * @returns Чек-сумма в формате UUID
  */
-export function generateMD5(jsonObject : string) : string {
+export function generateMD5(text : string) : string {
     
-    const checksumString = createHash('md5').update(jsonObject).digest('hex');
+    const checksumString = createHash('md5').update(text).digest('hex');
     return `${checksumString.substring(0, 8)}-${checksumString.substring(8, 12)}-${checksumString.substring(12, 16)}-${checksumString.substring(16, 20)}-${checksumString.substring(20, 32)}`
 }
 
@@ -65,7 +61,7 @@ export function generateMD5(jsonObject : string) : string {
  * @param target Сущность, расписание для которой нужно получить
  * @returns ICAL-компонент в текстовом виде если найден на удаленном API, `undefined` иначе
  */
-export async function fetchCalendarJSON(target : Target) : Promise<string | undefined> {
+export async function fetchCalendarICALText(target : Target) : Promise<string | undefined> {
     
     const url = config.fetch.scheduleUrl.replace('{0}', String(target.target_type)).replace('{1}', String(target.remote_id));
     const response = await fetch(url, {
@@ -82,12 +78,12 @@ export async function fetchCalendarJSON(target : Target) : Promise<string | unde
 /**
  * Читает ICAL-компонент из текстового вида
  * 
- * @param jsonObject ICAL-компонент в текстовом виде
+ * @param icalText ICAL-компонент в текстовом виде
  * @returns ICAL-компонент в виде объекта `ICAL.Component`
  */
-function _parseCalendarComponent(jsonObject : string) : ICAL.Component {
+function _parseCalendarComponent(icalText : string) : ICAL.Component {
 
-    const calendarComponent = ICAL.Component.fromString(jsonObject);
+    const calendarComponent = ICAL.Component.fromString(icalText);
     
     // Weird timezone patch. Am I missing something? 
     const timezone = new ICAL.Timezone(calendarComponent.getFirstSubcomponent('vtimezone'));
