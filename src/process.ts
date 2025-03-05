@@ -1,6 +1,6 @@
 import { bottlenecksFromLessons } from "./analysis.js";
 import { Bottlenecks, bottlenecksAdd, bottlenecksClear, bottlenecksFind } from "./bottleneck.js";
-import { fetchCalendarJSON, fetchTargets, generateMD5, parseLessons } from "./fetch.js";
+import { fetchCalendarICALText, fetchTargets, generateMD5, parseLessons } from "./fetch.js";
 import { BottlenecksHydrated, hydrateBottlenecks, hydrateSearchResult, SearchResultHydrated } from "./hydrate.js";
 import { Lesson, lessonsAdd, lessonsClear } from "./lesson.js";
 import { targetGetMD5, targetGetOrCreate, targetSetMD5 } from "./target.js";
@@ -19,18 +19,18 @@ export async function processAnalysis(targetType : number, remoteId : number, po
     
     const target = await targetGetOrCreate({ target_type : targetType, remote_id : remoteId }, pool);
     
-    const jsonObject = await fetchCalendarJSON(target);
+    const icalText = await fetchCalendarICALText(target);
 
-    if (jsonObject === undefined) return;
+    if (icalText === undefined) return;
     
-    const checksum = generateMD5(jsonObject)
+    const checksum = generateMD5(icalText)
     
     if (!config.app.doChecksumCheck || await targetGetMD5(target, pool) !== checksum) {
     
         await lessonsClear(target, pool);
         await bottlenecksClear(target, pool);
     
-        const lessons : Lesson[] = parseLessons(jsonObject);
+        const lessons : Lesson[] = parseLessons(icalText);
         const lessonsInserted = await lessonsAdd(target, lessons, pool);
     
         const bottlenecks : Bottlenecks = bottlenecksFromLessons(lessonsInserted);
