@@ -10,16 +10,15 @@ import { processAnalysis } from "./process.js";
  */
 export interface SearchResultHydrated {
 
-    targets : {
+    readonly targets : {
 
-        name : string,
-        targetType : number,
-        remoteId : number,
-        bottlenecks : BottlenecksHydrated
+        readonly name : string,
+        readonly targetType : number,
+        readonly remoteId : number,
+        readonly bottlenecks : BottlenecksHydrated
     }[]
-    nextPageToken : string
+    readonly nextPageToken : string
 }
-// TODO : Add readonly modifiers
 
 /**
  * "Наполненный" {@link DistantClassroom}; объект боттлнека, случающегося при необходимости бежать от занятия к занятию

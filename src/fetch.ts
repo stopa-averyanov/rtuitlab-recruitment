@@ -14,22 +14,21 @@ export interface SearchResult {
     /**
      * Найденные на удаленном API сущности
      */
-    targets : {
+    readonly targets : {
 
         /** Имя сущности */
-        name : string,
+        readonly name : string,
         /** Тип сущности */
-        targetType : number,
+        readonly targetType : number,
         /** Айди сущности на удаленном API */
-        remoteId : number
+        readonly remoteId : number
     }[]
     /**
      * Токен следующей страницы для повторных запросов
      */
-    nextPageToken : string
+    readonly nextPageToken : string
     // TODO : ^^^ make optional
 }
-// TODO : Add readonly modifiers
 
 /**
  * Извлекает занятия из ICAL-календаря в текстовом виде
