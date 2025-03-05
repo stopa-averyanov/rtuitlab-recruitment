@@ -30,13 +30,6 @@ export interface Lesson {
      */
     readonly start_date : Date;
 }
-// TODO : remove (unused)
-export interface Location { 
-
-    readonly building : string;
-    readonly classroom : string;
-    readonly campus : string;
-}
 
 /**
  * Находит и возвращает в базе данных все занятия у сущности
