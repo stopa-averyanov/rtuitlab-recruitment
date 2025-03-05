@@ -23,8 +23,9 @@ export enum JobStatus {
  */
 interface AnalysisRequest {
 
-    // TODO : complete docs
+    /** Тип сущности */
     targetType : number,
+    /** Айди сущности на удаленном API */
     remoteId : number
 }
 /**
@@ -32,9 +33,11 @@ interface AnalysisRequest {
  */
 interface SearchRequest {
 
-    // TODO : complete docs
+    /** Ограничение по количеству результатов поиска */
     limit? : number, 
+    /** Строка, поиск по включению которой нужно выполнить */
     match? : string, 
+    /** Токен следующей страницы (при повторных запросах) */
     pageToken? : string
 }
 
