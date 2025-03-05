@@ -86,7 +86,7 @@ curl -X POST http://localhost:8080/jobs/submit/analysis/group/4789/
 curl -X GET http://localhost:8080/jobs/status/1/
 ```
 
-Если все хорошо и задача была успешно выполнена, сервис ответит `{ "status" : "done" }. Можно обращаться к сервису за результатом задачи:
+Если все хорошо и задача была успешно выполнена, сервис ответит `{ "status" : "done" }`. Можно обращаться к сервису за результатом задачи:
 
 ```
 curl -X GET http://localhost:8080/jobs/result/1/
