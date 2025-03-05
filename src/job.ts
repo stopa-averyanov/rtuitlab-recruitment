@@ -1,7 +1,6 @@
 import { Pool } from "pg";
 import { processAnalysis, processSearch } from "./process.js";
-
-// TODO : fix types for job results (currently request types, should be bottlenecks and search results)
+import { BottlenecksHydrated, SearchResultHydrated } from "./hydrate.js";
 
 /**
  * Перечисление возможных статусов задачи
@@ -42,7 +41,7 @@ interface SearchRequest {
 }
 
 /** Словарь результатов выполненных задач по их идентификаторам */
-const results = new Map<number, AnalysisRequest | SearchRequest>();
+const results = new Map<number, SearchResultHydrated | BottlenecksHydrated>();
 /** Список идентификаторов задач, которые завершились ошибкой */
 const errors = new Array<number>();
 /** Список задач: словарь запросов клиента по идентификаторам соответствующих задач */
@@ -77,7 +76,7 @@ export function getJobStatus(jobId : number) : JobStatus {
  * @param jobId Идентификатор задачи
  * @returns Результат выполнения задачи если выполнена, `undefined` иначе
  */
-export function getJobResult(jobId : number) : undefined | AnalysisRequest | SearchRequest {
+export function getJobResult(jobId : number) : undefined | SearchResultHydrated | BottlenecksHydrated {
 
     if (results.has(jobId)) {
 
