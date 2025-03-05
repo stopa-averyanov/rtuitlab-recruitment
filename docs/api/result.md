@@ -102,7 +102,7 @@
 
 ### Пример ответа
 
-```json
+```jsonc
 {
     "distantClassrooms": [
         {
@@ -181,7 +181,7 @@
 
 ### Пример ответа
 
-```json
+```jsonc
 {
     "targets": [
         {

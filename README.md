@@ -28,7 +28,7 @@ curl http://localhost:8080/jobs/status/1/
 
 * Разверните базу данных, создав таблицы согласно [init.sql](./init.sql).
 * Настройте доступ к базе данных, заполнив [default.json](./config/default.json) соответствующе.
-```json
+```jsonc
 {
     "db" : {
 
