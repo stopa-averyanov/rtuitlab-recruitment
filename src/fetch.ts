@@ -29,6 +29,7 @@ export interface SearchResult {
     nextPageToken : string
     // TODO : ^^^ make optional
 }
+// TODO : Add readonly modifiers
 
 /**
  * Извлекает занятия из ICAL-календаря в текстовом виде
