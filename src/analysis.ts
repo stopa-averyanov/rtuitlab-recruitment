@@ -240,7 +240,9 @@ function _collapseToGroups(lessons : Lesson[]) : Lesson[][] {
         return lessonA.start_date.getTime() === lessonB.start_date.getTime();
     }
 
-    const lessonGroups = lessons.toSorted().map(lesson => [lesson]);
+    const lessonGroups = lessons.map(lesson => [lesson]);
+    
+    lessonGroups.sort((a : Lesson[], b : Lesson[]) => (a[0].start_date.valueOf() - b[0].start_date.valueOf()));
 
     for (let i = 0; i < lessonGroups.length; i++) {
     
